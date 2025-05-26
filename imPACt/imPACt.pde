@@ -1,57 +1,37 @@
 //text font
-PFont font = createFont("GentiumBasic-Bold-48.vlw", 50);
+PFont font;
+PImage start;
 
-//start screen
-String currentScreen = "start";
-color currentColor = #FFADDD;
-color buttonColor = #FFADDD;
-color buttonHighlight = #FFE0F2;
+//screens 
+String currentScreen = "start"; //
+
+start startScreen;
 
 void setup() {
-  size(720, 720);
-  background(#FFCEEB);
-  
-  
-  switch(currentScreen) {
-    case "start":
-      stroke(225);
-      fill(buttonColor);
-      rectMode(CENTER);
-      rect(360, 400, 280, 100, 28);
-      
-      textMode(CENTER);
-      textFont(font);
-      text("start", 360, 400);
-  }
+  size(800, 800);
+  startScreen = new start();
+ 
 }
 
 void draw() {
-  update(mouseX, mouseY);
-  background(#FFCEEB);
+  switch(currentScreen) {
+    case "start":
+      startScreen.drawStart();
+      break;
+    case "game":
+      background(0);
+      break;
+    case "avatar":
+      background(255);
+      break;
+  }
   
-  switch(currentScreen) {
-    case "start":
-      stroke(255);
-      fill(currentColor);
-      rectMode(CENTER);
-      rect(360, 400, 280, 100, 28);
-  }
+  
 }
 
-void update(int x, int y) {
-  switch(currentScreen) {
-    case "start":
-      if (overRectButton(360, 400, 280, 100))
-      {
-        currentColor = buttonHighlight;
-      }
-      else
-      {
-         currentColor = buttonColor;
-      }
-  }
-}
-
-boolean overRectButton(int x, int y, int w, int h) {
-  return mouseX >= x - w/2 && mouseX <= x + w/2 && mouseY >= y - h/2 && mouseY <= y + h/2;
+void mousePressed() {
+  //from start to game
+  if (startScreen.overButton(400, 400, 500, 200)) {currentScreen = "game";}
+  if (startScreen.overButton(400, 630, 550, 150)) {currentScreen = "avatar";}
+ 
 }
