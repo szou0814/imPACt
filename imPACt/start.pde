@@ -17,12 +17,11 @@ public class start {
   void drawStart() {   
     image(background, 0, 0);
     drawStartButton();
-    drawCustomizeButton();
 
   }
   
   void drawStartButton() {
-    if (overButton(400, 400, 500, 200))
+    if (overButton(400, 400, 550, 100))
     {
       currentButtonColor = highlightColor;
     }
@@ -36,37 +35,15 @@ public class start {
     strokeWeight(5);
     fill(currentButtonColor);
     rectMode(CENTER);
-    rect(400, 430, 550, 150, 28);
+    rect(400, 400, 550, 100, 28);
     
     //text
     textAlign(CENTER, CENTER);
     fill(255);
     textFont(font);
-    text("start game", 400, 425);
+    text("start game", 400, 400);
   }
-  
-  void drawCustomizeButton() {
-    if (overButton(400, 630, 550, 150))
-    {
-      currentButtonColor = highlightColor;
-    }
-    else 
-    {
-      currentButtonColor = buttonColor;
-    }
-    stroke(#fffcd3);
-    strokeWeight(5);
-    fill(currentButtonColor);
-    rectMode(CENTER);
-    rect(400, 630, 550, 150, 28);
-    
-    //text
-    textAlign(CENTER, CENTER);
-    fill(255);
-    textFont(font);
-    text("customize avatar", 400, 630);
-  }
-  
+
   boolean overButton(int x, int y, int w, int h) {
     return mouseX >= x - w/2 && mouseX <= x + w/2 && mouseY >= y - h/2 && mouseY <= y + h/2;
   }

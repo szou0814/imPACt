@@ -36,6 +36,8 @@ void draw() {
       break;
     case "game":
       break;
+    //case "avatar":
+      //break;
   }
   
 }
