@@ -15,21 +15,42 @@ public class avatar {
     
     //skin
     fill(skinColor);
-    square(x, y + 5, size - 10);
+    square(x, y + (size * 0.1), size - (size * 0.2));
     
     //bangs
     fill(hairColor);
-    arc(x - 25, y - 25, 55, 55, 0, HALF_PI);
-    arc(x + 25, y - 25, 55, 55, HALF_PI, PI);
+    arc(x - (size * 0.5), y - (size * 0.5), size * 1.1, size * 1.1, 0, HALF_PI);
+    arc(x + (size * 0.5), y - (size * 0.5), size * 1.1, size * 1.1, HALF_PI, PI);
     
     //eyes
     fill(0);
-    square(x - 10, y + 5, 10);
-    square(x + 10, y + 5, 10);
+    square(x - (size * 0.2), y + (size * 0.1), size * 0.2);
+    square(x + (size * 0.2), y + (size * 0.1), size * 0.2);
     fill(255);
-    square(x - 13, y + 2, 4);
-    square(x + 7, y + 2, 4);
+    square(x - (size * 0.26), y + (size * 0.04), size * 0.08);
+    square(x + (size * 0.14), y + (size * 0.04), size * 0.08);
     
+    //blush
+    fill(#ffc0cb);
+    ellipse(x - (size * 0.3), y + (size * 0.25), size * 0.2, size * 0.15);
+    ellipse(x + (size * 0.3), y + (size * 0.25), size * 0.2, size * 0.15);
+    
+    //smile
+    noFill();
+    stroke(0);
+    strokeWeight(size * 0.05);
+    arc(x, y + size * 0.30, size * 0.20, size * 0.15, 0, PI);
+    
+    //clip
+    pushMatrix();
+    translate(x - (size * 0.3), y - (size * 0.25));
+    rotate(-PI/6);
+    noStroke();
+    fill(#fffcd3);
+    rectMode(CENTER);
+    rect(0, 0, size * 0.25, size * 0.1);
+    popMatrix();
+
   }
   
   void setHairColor(color hair) {
@@ -37,7 +58,7 @@ public class avatar {
   }
   
   void setSkinColor(color skin) {
-     skinColor = skin;
+    skinColor = skin;
   }
   
 }

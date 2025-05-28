@@ -34,7 +34,7 @@ void draw() {
   switch(currentScreen) {
     case "start":
       startScreen.drawStart();
-      character.drawAvatar(400, 600, 50);
+      character.drawAvatar(400, 600, 225);
       break;
     case "game":
       break;
@@ -45,5 +45,25 @@ void draw() {
 void mousePressed() {
   //from start to game
   if (startScreen.overButton(400, 400, 550, 100)) {clickSFX.play(); currentScreen = "game";}
+}
+
+void keyPressed() {
+  //customize modes
+  if (key == 'h') {hairSelectMode = true; skinSelectMode = false;}
+  //change hair
+  if (hairSelectMode)
+  {
+     if (keyCode == LEFT)
+     {
+         if (currentHair == 0) {currentHair = hairColors.length - 1;}
+         else {currentHair--;}
+     }
+     if (keyCode == RIGHT)
+     {
+       if (currentHair == hairColors.length - 1) {currentHair = 0;}
+       else {currentHair++;}
+     }
+     character.setHairColor(hairColors[currentHair]);
+  }
 }
  
