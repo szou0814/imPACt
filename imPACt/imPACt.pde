@@ -15,15 +15,17 @@ start startScreen;
 //avatar 
 color[] hairColors = {#2E1802, #81552A, #FFD78B, #FA9A23, #FF81C6, #A881FF, #2A5EE8, #2AE8DA}; //black/dark brown, brown, blonde, ginger, pink, purple, dark blue, teal
 color[] skinColors = {#FFD8A7, #CBA575, #714C1E}; //light, tan, dark
+boolean hairSelectMode = false;
+boolean skinSelectMode = false;
 int currentHair = 0;
 int currentSkin = 0;
 avatar character;
 
 void setup() {
   size(800, 800);
-  backgroundMusic = new SoundFile(this, "data/relaxing-lofi-tessera-by-sascha-ende-from-filmmusic-io.mp3");
+  //backgroundMusic = new SoundFile(this, "data/relaxing-lofi-tessera-by-sascha-ende-from-filmmusic-io.mp3");
   clickSFX = new SoundFile(this, "data/mouse-click-290204.mp3");
-  backgroundMusic.loop();
+  //backgroundMusic.loop();
   startScreen = new start();
   character = new avatar(hairColors[currentHair], skinColors[currentSkin]);
 }
@@ -32,12 +34,10 @@ void draw() {
   switch(currentScreen) {
     case "start":
       startScreen.drawStart();
-      character.drawAvatar();
+      character.drawAvatar(400, 600, 50);
       break;
     case "game":
       break;
-    //case "avatar":
-      //break;
   }
   
 }
