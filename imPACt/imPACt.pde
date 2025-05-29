@@ -45,7 +45,6 @@ void draw() {
       myGhost.drawGhost(400, 600, 225);
       break;
   }
-  
 }
 
 void mousePressed() {
