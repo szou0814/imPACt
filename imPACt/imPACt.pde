@@ -9,7 +9,7 @@ PFont font;
 PImage start;
 
 //screens 
-String currentScreen = "game"; 
+String currentScreen = "start"; 
 start startScreen;
 
 //avatar for customization
@@ -37,7 +37,7 @@ void setup() {
   //backgroundMusic.loop();
   startScreen = new start();
   myGhost = new ghost();
-  myGame = new game();
+  myGame = new game(width / 40, width / 40);
   myFood = new food();
   character = new avatar(hairColors[currentHair], skinColors[currentSkin]);
 }
@@ -49,7 +49,7 @@ void draw() {
       character.drawAvatar(400, 600, 225);
       break;
     case "game":
-      myGame.drawBackground();
+      myGame.drawMaze();
       myGhost.drawGhost(400, 600, 225);
       myFood.drawFood(400, 300, 225);
       break;
