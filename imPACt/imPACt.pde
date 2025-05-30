@@ -9,7 +9,7 @@ PFont font;
 PImage start;
 
 //screens 
-String currentScreen = "start"; 
+String currentScreen = "game"; 
 start startScreen;
 
 //avatar for customization
@@ -24,6 +24,12 @@ avatar character;
 //ghost
 ghost myGhost;
 
+//game
+game myGame;
+
+//food
+food myFood;
+
 void setup() {
   size(800, 800);
   //backgroundMusic = new SoundFile(this, "data/relaxing-lofi-tessera-by-sascha-ende-from-filmmusic-io.mp3");
@@ -31,6 +37,8 @@ void setup() {
   //backgroundMusic.loop();
   startScreen = new start();
   myGhost = new ghost();
+  myGame = new game();
+  myFood = new food();
   character = new avatar(hairColors[currentHair], skinColors[currentSkin]);
 }
 
@@ -41,8 +49,9 @@ void draw() {
       character.drawAvatar(400, 600, 225);
       break;
     case "game":
-      background(0);
+      myGame.drawBackground();
       myGhost.drawGhost(400, 600, 225);
+      myFood.drawFood(400, 300, 225);
       break;
   }
 }
@@ -59,22 +68,25 @@ void mousePressed() {
 }
 
 void keyPressed() {
-  //customize modes
-  if (key == 'h') {hairSelectMode = true; skinSelectMode = false;}
-  if (key == 's') {hairSelectMode = false; skinSelectMode = true;}
-  //change hair
-  if (hairSelectMode)
-  {
-     if (keyCode == LEFT) {currentHair = (currentHair + hairColors.length - 1) % hairColors.length;}
-     if (keyCode == RIGHT) {currentHair = (currentHair + 1) % hairColors.length;}
-     character.setHairColor(hairColors[currentHair]);
-  }
-  //change skin
-  if (skinSelectMode) 
-  {
-     if (keyCode == LEFT) {currentSkin = (currentSkin + skinColors.length - 1) % skinColors.length;}
-     if (keyCode == RIGHT) {currentSkin = (currentSkin + 1) % skinColors.length;}
-     character.setSkinColor(skinColors[currentSkin]);
+  switch(currentScreen) {
+    case "start":
+      //customize modes
+      if (key == 'h') {hairSelectMode = true; skinSelectMode = false;}
+      if (key == 's') {hairSelectMode = false; skinSelectMode = true;}
+      //change hair
+      if (hairSelectMode)
+      {
+         if (keyCode == LEFT) {currentHair = (currentHair + hairColors.length - 1) % hairColors.length;}
+         if (keyCode == RIGHT) {currentHair = (currentHair + 1) % hairColors.length;}
+         character.setHairColor(hairColors[currentHair]);
+      }
+      //change skin
+      if (skinSelectMode) 
+      {
+         if (keyCode == LEFT) {currentSkin = (currentSkin + skinColors.length - 1) % skinColors.length;}
+         if (keyCode == RIGHT) {currentSkin = (currentSkin + 1) % skinColors.length;}
+         character.setSkinColor(skinColors[currentSkin]);
+      }
   }
 }
 

@@ -38,8 +38,8 @@ public class start {
     rect(400, 400, 550, 100, 28);
     
     //text
-    textAlign(CENTER, CENTER);
     fill(255);
+    textAlign(CENTER, CENTER);
     textFont(font);
     text("start game", 400, 400);
   }
