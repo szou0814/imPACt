@@ -1,10 +1,14 @@
 public class avatar {
+  int posX;
+  int posY;
   color hairColor;
   color skinColor;
  
   public avatar(color hair, color skin) {
     hairColor = hair;
     skinColor = skin;
+    posX = 0;
+    posY = 0;
   }
   
   void drawAvatar(int x, int y, int size) {
@@ -51,6 +55,19 @@ public class avatar {
     rect(0, 0, size * 0.25, size * 0.1);
     popMatrix();
 
+  }
+  
+  int getPosX() {
+    return posX;
+  }
+  
+  int getPosY() {
+    return posY;
+  }
+  
+  void setPos(int x, int y) {
+    posX = x;
+    posY = y;
   }
   
   void setHairColor(color hair) {

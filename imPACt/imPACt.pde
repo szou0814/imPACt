@@ -21,14 +21,8 @@ int currentHair = 0;
 int currentSkin = 0;
 avatar character;
 
-//ghost
-ghost myGhost;
-
 //game
 game myGame;
-
-//food
-food myFood;
 
 void setup() {
   size(800, 800);
@@ -36,10 +30,8 @@ void setup() {
   clickSFX = new SoundFile(this, "data/mouse-click-290204.mp3");
   //backgroundMusic.loop();
   startScreen = new start();
-  myGhost = new ghost();
-  myGame = new game(width / 40, width / 40);
-  myFood = new food();
   character = new avatar(hairColors[currentHair], skinColors[currentSkin]);
+  myGame = new game(character);
 }
 
 void draw() {
@@ -50,8 +42,6 @@ void draw() {
       break;
     case "game":
       myGame.drawMaze();
-      myGhost.drawGhost(400, 600, 225);
-      myFood.drawFood(400, 300, 225);
       break;
   }
 }
@@ -87,6 +77,9 @@ void keyPressed() {
          if (keyCode == RIGHT) {currentSkin = (currentSkin + 1) % skinColors.length;}
          character.setSkinColor(skinColors[currentSkin]);
       }
+      break;
+    case "game":
+      myGame.handleKeyPress(keyCode);
   }
 }
 

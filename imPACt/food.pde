@@ -1,17 +1,23 @@
 public class food {
+ int posX;
+ int posY;
  String type;
- int duration;
+ int powerupDuration;
  
- public food() {
-   type = "powerUp";
-   duration = 0;
+ public food(int x, int y) {
+   posX = x;
+   posY = y;
+   
+   //deciding what type
+   int chancePowerup = (int)(Math.random() * 100);
+   if (chancePowerup < 90) {type = "normal"; powerupDuration = 0;}
+   else {type = "powerUp"; powerupDuration = 10;}
+   
  }
  
- void drawFood(int x, int y, int size) {
+ void drawFood(int x, int y, float size) {
    rectMode(CENTER);
-   //background
-   fill(0);
-   square(x, y, size);
+
    if (type.equals("normal"))
    {
      //laptop
@@ -48,4 +54,17 @@ public class food {
      text("#1", x, y + (size * 0.25));
    }
  }
+ 
+   int getPosX() {
+    return posX;
+  }
+  
+  int getPosY() {
+    return posY;
+  }
+  
+  void setPos(int x, int y) {
+    posX = x;
+    posY = y;
+  }
 }
