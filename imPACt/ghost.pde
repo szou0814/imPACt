@@ -1,21 +1,12 @@
 public class ghost {
   int posX;
   int posY;
-  int dirX;
-  int dirY;
-  ArrayList<int[]> directions = new ArrayList<int[]>();
-  int[][] dirs = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}};
   color ghostColor;
-  
   
   public ghost(int x, int y) {
     posX = x;
     posY = y;
     ghostColor = color(random(255), random(255), random(255));
-   
-    int direction = (int)(random(4));
-    dirX = dirs[direction][0];
-    dirY = dirs[direction][1];
   }
   
   void drawGhost(int x, int y, int size) {
@@ -52,36 +43,26 @@ public class ghost {
   }
   
   void move(int[][] maze) {
-    int newX = posX + dirX;
-    int newY = posY + dirY;
-    
-    if (isValid(newX, newY, maze))
-    {
+    ArrayList<int[]> directions = new ArrayList<int[]>();
+    int[][] dirs = {{-1,0}, {1,0}, {0,-1}, {0,1}}; // up, down, left, right
+
+    for (int[] d : dirs) {
+      int newX = posX + d[0];
+      int newY = posY + d[1];
+
+      if (newX >= 0 && newX < maze.length && newY >= 0 && newY < maze[0].length && maze[newX][newY] != 0 && maze[newX][newY] != 3) {
+        directions.add(new int[]{newX, newY});
+      }
+    }
+
+    if (directions.size() > 0) {
+      int[] choice = directions.get((int)random(directions.size()));
       maze[posX][posY] = 1;
-      posX = newX;
-      posY = newY;
+
+      posX = choice[0];
+      posY = choice[1];
       maze[posX][posY] = 3;
     }
-    else
-    {
-       for (int[] d : dirs)
-       {
-          newX = posX + d[0];
-          newY = posY = d[0];
-          
-          if (newX >= 0 && newX < maze.length && newY >= 0 && newY < maze[0].length && maze[newX][newY] != 0 && maze[newX][newY] != 3)
-          {
-            directions.add(new int[]{newX, newY});
-          }
-       }
-       
-      if (directions.size 
-    }
-  }
-  
-  boolean isValid(int x, int y, int[][] maze)
-  {
-      return x >= 0 && x < maze.length && y >= 0 && y < maze[0].length && maze[x][y] != 0 && maze[x][y] != 3;
   }
   
   int getPosX() {
