@@ -1,11 +1,13 @@
 public class ghost {
-  int posX;
-  int posY;
+  PVector pos;
+  PVector spd;
+  PVector targetTile = new PVector(0, 0);
+  PVector prevDir = new PVector(0, 0);
   color ghostColor;
   
   public ghost(int x, int y) {
-    posX = x;
-    posY = y;
+    pos = new PVector(x * 40, y * 40);
+    targetTile = pos.copy();
     ghostColor = color(random(255), random(255), random(255));
   }
   
@@ -43,25 +45,48 @@ public class ghost {
   }
   
   void move(int[][] maze) {
-    ArrayList<int[]> directions = new ArrayList<int[]>();
-    int[][] dirs = {{-1,0}, {1,0}, {0,-1}, {0,1}}; // up, down, left, right
+    ArrayList<PVector> directions = new ArrayList<PVector>();
+    PVector[] dirs = {new PVector(-1, 0), new PVector(1, 0), new PVector(0, -1), new PVector(0, 1)};
 
-    for (int[] d : dirs) {
-      int newX = posX + d[0];
-      int newY = posY + d[1];
-
-      if (newX >= 0 && newX < maze.length && newY >= 0 && newY < maze[0].length && maze[newX][newY] != 0 && maze[newX][newY] != 3) {
-        directions.add(new int[]{newX, newY});
+    for (PVector d : dirs) 
+    {
+      int newX = posX + (int)d.x;
+      int newY = posY + (int)d.y;
+      
+      //WALL = 1, GHOST = 3
+      if (newX >= 0 && newX < maze.length && newY >= 0 && newY < maze[0].length && maze[newX][newY] != 0 && maze[newX][newY] != 3) 
+      {
+        if (!(d.x == -prevDir.x && d.y == -prevDir.y))
+        {
+          directions.add(d);
+        }
       }
     }
-
-    if (directions.size() > 0) {
-      int[] choice = directions.get((int)random(directions.size()));
+    
+    if (directions.size() == 0)
+    {
+      for (PVector d : dirs) 
+      {
+        int newX = posX + (int)d.x;
+        int newY = posY + (int)d.y;
+        
+        if (newX >= 0 && newX < maze.length && newY >= 0 && newY < maze[0].length && maze[newX][newY] != 0 && maze[newX][newY] != 3) 
+        {
+          directions.add(d);
+        }
+      }
+    }
+    
+    if (directions.size() > 0)
+    {
+      PVector choice = directions.get((int)random(directions.size()));
+      
       maze[posX][posY] = 1;
-
-      posX = choice[0];
-      posY = choice[1];
+      posX += (int)choice.x;
+      posY += (int)choice.y;
       maze[posX][posY] = 3;
+      
+      prevDir = choice.copy();
     }
   }
   

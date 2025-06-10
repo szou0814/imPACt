@@ -5,10 +5,8 @@ public class game {
   
   int[][] maze;
   int size = 40;
+  ArrayList<ghost> ghosts = new ArrayList<ghost>();
   avatar character;
-  //temp
-  ghost ghost1;
-  ghost ghost2;
   final int WALL = 0;
   final int SPACE = 1;
   final int AVATAR = 2;
@@ -53,9 +51,11 @@ public class game {
       f.drawFood(f.getPosX() * size, f.getPosY() * size, size * 0.7);
     }
     
-    //temp
-    ghost1.drawGhost(ghost1.getPosX() * size, ghost1.getPosY() * size, size);
-    ghost2.drawGhost(ghost2.getPosX() * size, ghost2.getPosY() * size, size);
+    for (ghost g : ghosts)
+    {
+      g.drawGhost(g.getPosX() * size, g.getPosY() * size, size);
+    }
+    
   }
   
   void carveMaze() {
@@ -66,15 +66,16 @@ public class game {
     maze[2][maze.length / 2] = SPACE;
     character.setPos(1, maze.length / 2);
     
-    maze[19][maze.length / 2 - 1] = GHOST;
-    maze[19][maze.length / 2 + 1] = GHOST;
+    //ensure space for ghosts
+    ghosts.clear();
+    maze[maze.length / 2 - 1][maze.length / 2] = GHOST;
+    maze[maze.length / 2][maze.length / 2] = GHOST;
+    maze[maze.length / 2 + 1][maze.length / 2] = GHOST;
     
-    //temp
-    ghost1 = new ghost(19, maze.length / 2 - 1);
-    ghost2 = new ghost(19, maze.length / 2 + 1);
+    ghosts.add(new ghost(maze.length / 2 - 1, maze.length / 2));
+    ghosts.add(new ghost(maze.length / 2, maze.length / 2));
+    ghosts.add(new ghost(maze.length / 2 + 1, maze.length / 2));
     
-    
-   
   }
   
   void carveMaze(int[][] maze, int row, int col) {
@@ -133,7 +134,9 @@ public class game {
   }
   
   void updateGhosts() {
-    ghost1.move(maze);
-    ghost2.move(maze);
+    for (ghost g : ghosts)
+    {
+      g.move(maze);
+    }
   }
 }
