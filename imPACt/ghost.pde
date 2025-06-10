@@ -1,13 +1,15 @@
+import java.util.Collections;
+import java.util.Arrays;
+
 public class ghost {
-  PVector pos;
-  PVector spd;
-  PVector targetTile = new PVector(0, 0);
+  int posX;
+  int posY;
   PVector prevDir = new PVector(0, 0);
   color ghostColor;
   
   public ghost(int x, int y) {
-    pos = new PVector(x * 40, y * 40);
-    targetTile = pos.copy();
+    posX = x;
+    posY = y;
     ghostColor = color(random(255), random(255), random(255));
   }
   
@@ -47,6 +49,13 @@ public class ghost {
   void move(int[][] maze) {
     ArrayList<PVector> directions = new ArrayList<PVector>();
     PVector[] dirs = {new PVector(-1, 0), new PVector(1, 0), new PVector(0, -1), new PVector(0, 1)};
+    for (int i = dirs.length - 1; i > 0; i--)
+    {
+      int j = (int)(Math.random() * (i + 1));
+      PVector temp = dirs[i];
+      dirs[i] = dirs[j];
+      dirs[j] = temp;
+    }
 
     for (PVector d : dirs) 
     {
