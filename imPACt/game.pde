@@ -31,7 +31,7 @@ public class game {
     fill(#fffcd3);
     square(0, 0, 1600);
     
-    if (ticks % 10 == 0) {updateGhosts();}
+    if (ticks % 10 == 0) {updateGhosts(); updateAvatar();}
     
     //maze
     for (int row = 0; row < maze.length; row++)
@@ -116,15 +116,17 @@ public class game {
   }
   
   void handleKeyPress(int code) {
+    if (code == UP) {character.setDir(0, -1);}
+    if (code == DOWN) {character.setDir(0, 1);}
+    if (code == LEFT) {character.setDir(-1, 0);}
+    if (code == RIGHT) {character.setDir(1, 0);}
+  }
+  
+  void updateAvatar() {
     int x = character.getPosX();
     int y = character.getPosY();
-    int newX = x;
-    int newY = y;
-    
-    if (code == UP) {newY--;}
-    if (code == DOWN) {newY++;}
-    if (code == LEFT) {newX--;}
-    if (code == RIGHT) {newX++;}
+    int newX = x + (int)character.dir.x;
+    int newY = y + (int)character.dir.y;
     
     if (newX >= 0 && newX < maze.length && newY >= 0 && newY < maze[0].length && maze[newX][newY] != WALL) {
       maze[x][y] = SPACE;
@@ -140,3 +142,4 @@ public class game {
     }
   }
 }
+  

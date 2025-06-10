@@ -1,6 +1,3 @@
-import java.util.Collections;
-import java.util.Arrays;
-
 public class ghost {
   int posX;
   int posY;
@@ -49,7 +46,7 @@ public class ghost {
   void move(int[][] maze) {
     ArrayList<PVector> directions = new ArrayList<PVector>();
     PVector[] dirs = {new PVector(-1, 0), new PVector(1, 0), new PVector(0, -1), new PVector(0, 1)};
-    for (int i = dirs.length - 1; i > 0; i--)
+    for (int i = dirs.length - 1; i >= 0; i--)
     {
       int j = (int)(Math.random() * (i + 1));
       PVector temp = dirs[i];
@@ -62,7 +59,7 @@ public class ghost {
       int newX = posX + (int)d.x;
       int newY = posY + (int)d.y;
       
-      //WALL = 1, GHOST = 3
+      //WALL = 0, GHOST = 3
       if (newX >= 0 && newX < maze.length && newY >= 0 && newY < maze[0].length && maze[newX][newY] != 0 && maze[newX][newY] != 3) 
       {
         if (!(d.x == -prevDir.x && d.y == -prevDir.y))

@@ -1,6 +1,7 @@
 public class avatar {
   int posX;
   int posY;
+  PVector dir = new PVector(0, 0);
   color hairColor;
   color skinColor;
  
@@ -68,6 +69,11 @@ public class avatar {
   void setPos(int x, int y) {
     posX = x;
     posY = y;
+  }
+  
+  void setDir(int x, int y) {
+    dir.x = x;
+    dir.y = y;
   }
   
   void setHairColor(color hair) {
