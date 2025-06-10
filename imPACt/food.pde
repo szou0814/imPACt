@@ -1,21 +1,18 @@
 public class food {
- int posX;
- int posY;
+ PVector pos;
  String type;
  int powerupDuration;
  
  public food(int x, int y) {
-   posX = x;
-   posY = y;
+   pos = new PVector(x, y);
    
    //deciding what type
    int chancePowerup = (int)(Math.random() * 100);
-   if (chancePowerup < 90) {type = "normal"; powerupDuration = 0;}
+   if (chancePowerup < 95) {type = "normal"; powerupDuration = 0;}
    else {type = "powerUp"; powerupDuration = 10;}
-   
  }
  
- void drawFood(int x, int y, float size) {
+ void drawFood(float x, float y, float size) {
    rectMode(CENTER);
 
    if (type.equals("normal"))
@@ -55,16 +52,11 @@ public class food {
    }
  }
  
-   int getPosX() {
-    return posX;
+   PVector getPos() {
+    return pos.copy();
   }
   
-  int getPosY() {
-    return posY;
-  }
-  
-  void setPos(int x, int y) {
-    posX = x;
-    posY = y;
+  void setPos(float x, float y) {
+    pos.set(x, y);
   }
 }

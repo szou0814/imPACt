@@ -1,23 +1,35 @@
 import java.util.ArrayList;
 
 public class game {
+  PFont fontBig;
+  PFont fontSmall;
+  
+  boolean gameStart = false;
+  boolean lifeLost = false;
+  
   int ticks = 0;
   
   int[][] maze;
   int size = 40;
-  ArrayList<ghost> ghosts = new ArrayList<ghost>();
-  avatar character;
   final int WALL = 0;
   final int SPACE = 1;
   final int AVATAR = 2;
   final int GHOST = 3;
   final int FOOD = 4;
   
+  ArrayList<ghost> ghosts = new ArrayList<ghost>();
   ArrayList<food> foods = new ArrayList<food>();
+  avatar character;
+ 
+  int lives = 3;
+  PImage heartImg;
   
   public game(avatar character) {  
     this.character = character;
-    maze = new int[21][21];
+    fontBig = loadFont("TimesNewRomanPS-BoldMT-40.vlw");
+    fontSmall = loadFont("TimesNewRomanPS-BoldMT-25.vlw");
+    heartImg = loadImage("heart.png");
+    maze = new int[21][18];
     carveMaze();
    
   }
@@ -26,56 +38,92 @@ public class game {
     ticks++;
     rectMode(CENTER);
     
-    //background
     noStroke();
     fill(#fffcd3);
     square(0, 0, 1600);
+   
+    if (gameStart && ticks % 13 == 0) {updateAvatar(); updateGhosts();}
     
-    if (ticks % 10 == 0) {updateGhosts(); updateAvatar();}
+    for (food f : foods) 
+    {
+      f.drawFood(f.getPos().x * size, f.getPos().y * size, size  * 0.7);
+    }
     
-    //maze
     for (int row = 0; row < maze.length; row++)
     {
       for (int col = 0; col < maze[row].length; col++)
       {
-         //avatar
          if (maze[row][col] == AVATAR) {character.drawAvatar(row * size, col * size, size);}
-         //wall
-         if (maze[row][col] == WALL) {fill(#ffc0cb); square(row * size, col * size, size);}
+         if (maze[row][col] == WALL) {noStroke(); fill(#ffc0cb); square(row * size, col * size, size);}
          
       }
     }
     
-    for (food f : foods) 
-    {
-      f.drawFood(f.getPosX() * size, f.getPosY() * size, size * 0.7);
-    }
-    
     for (ghost g : ghosts)
     {
-      g.drawGhost(g.getPosX() * size, g.getPosY() * size, size);
+      g.drawGhost(g.getPos().x * size, g.getPos().y * size, size);
     }
     
+    if (!gameStart) 
+    {      
+      stroke(#e1f5fc);
+      strokeWeight(5);
+      fill(#ffedeb);
+      rectMode(CENTER);
+      rect(400, 360, 525, 140);
+
+      fill(255);
+      textAlign(CENTER, CENTER);
+      textFont(fontBig);
+      text("press any key to start", 400, 318);
+      
+     textFont(fontSmall);
+      if (!lifeLost)
+      {
+        text("your goal is to collect as many lines of code\nand achievements while avoiding the\nghosts of negative thought!", 400, 382);
+      }
+      else
+      {
+        text("uh oh! you have " + lives + " lives left.\nyou got this. keep on going!", 400, 375);
+      }
+      
+    }
   }
   
   void carveMaze() {
     carveMaze(maze, 1, 1);
     
+    //ensure tunnels
+    maze[0][maze[0].length / 2] = SPACE;
+    maze[maze.length - 1][maze[0].length / 2] = SPACE;
+    maze[maze.length / 2][0] = SPACE;
+    maze[maze.length / 2][maze[0].length - 1] = SPACE;
+    
     //ensure space for character
-    maze[1][maze.length / 2] = AVATAR;
-    maze[2][maze.length / 2] = SPACE;
-    character.setPos(1, maze.length / 2);
+    maze[1][maze[0].length / 2] = AVATAR;
+    maze[2][maze[0].length / 2] = SPACE;
+    character.setPos(1, maze[0].length / 2);
     
     //ensure space for ghosts
     ghosts.clear();
-    maze[maze.length / 2 - 1][maze.length / 2] = GHOST;
-    maze[maze.length / 2][maze.length / 2] = GHOST;
-    maze[maze.length / 2 + 1][maze.length / 2] = GHOST;
+    maze[maze.length / 2 - 1][maze[0].length / 2] = GHOST;
+    maze[maze.length / 2][maze[0].length / 2] = GHOST;
+    maze[maze.length / 2 + 1][maze[0].length / 2] = GHOST;
     
-    ghosts.add(new ghost(maze.length / 2 - 1, maze.length / 2));
-    ghosts.add(new ghost(maze.length / 2, maze.length / 2));
-    ghosts.add(new ghost(maze.length / 2 + 1, maze.length / 2));
+    ghosts.add(new ghost(maze.length / 2 - 1, maze[0].length / 2, true));
+    ghosts.add(new ghost(maze.length / 2, maze[0].length / 2));
+    ghosts.add(new ghost(maze.length / 2 + 1, maze[0].length / 2));
     
+    //add food
+    foods.clear();
+    for (int r = 0; r < maze.length; r++)
+    {
+      for (int c = 0; c < maze[r].length; c++)
+      {
+        boolean isTunnel = (r == 0 && c == maze[0].length / 2) || (r == maze.length - 1 && c == maze[0].length / 2) || (r == maze.length / 2 && c == 0) || (r == maze.length / 2 && c == maze[0].length - 1);   
+        if (!isTunnel && maze[r][c] == SPACE || maze[r][c] == GHOST) {foods.add(new food(r, c)); maze[r][c] = FOOD;}
+      }
+    }
   }
   
   void carveMaze(int[][] maze, int row, int col) {
@@ -83,10 +131,8 @@ public class game {
     if (maze[row][col] == SPACE || checkAdjacent(maze, row, col)) {return;}
     
     if (row == 1 && col == maze.length / 2) {return;}
-    //temp
-    if (row == 19 && (col == maze.length / 2 - 1 || col == maze.length / 2 + 1)) {return;}
     
-    maze[row][col] = FOOD;
+    maze[row][col] = SPACE;
     foods.add(new food(row, col));
     ArrayList<Integer> directions = new ArrayList<Integer>();
     directions.add(0); directions.add(1); directions.add(2); directions.add(3);
@@ -116,6 +162,7 @@ public class game {
   }
   
   void handleKeyPress(int code) {
+    gameStart = true;
     if (code == UP) {character.setDir(0, -1);}
     if (code == DOWN) {character.setDir(0, 1);}
     if (code == LEFT) {character.setDir(-1, 0);}
@@ -123,23 +170,68 @@ public class game {
   }
   
   void updateAvatar() {
-    int x = character.getPosX();
-    int y = character.getPosY();
-    int newX = x + (int)character.dir.x;
-    int newY = y + (int)character.dir.y;
+    PVector pos = character.getPos();
+    PVector dir = character.getDir();
+    
+    int newX = (int)(pos.x + dir.x);
+    int newY = (int)(pos.y + dir.y);
+    
+    if ((int)pos.y == maze[0].length / 2) 
+    {
+      if (newX < 0) {newX = maze.length - 1;}
+      else {if (newX >= maze.length) {newX = 0;}}
+    }
+    if ((int)pos.x == maze.length / 2) 
+    {
+      if (newY < 0) {newY = maze[0].length - 1;}
+      else {if (newY >= maze[0].length) {newY = 0;}}
+    }
     
     if (newX >= 0 && newX < maze.length && newY >= 0 && newY < maze[0].length && maze[newX][newY] != WALL) {
-      maze[x][y] = SPACE;
+      maze[(int)pos.x][(int)pos.y] = SPACE;
       maze[newX][newY] = AVATAR;
       character.setPos(newX, newY);
     }
   }
   
   void updateGhosts() {
+    PVector avatarPos = character.getPos();
+    
     for (ghost g : ghosts)
     {
-      g.move(maze);
+      PVector prevPos = g.getPos().copy();
+      g.move(maze, avatarPos);
+      PVector currPos = g.getPos();
+      
+      if ((int)currPos.x == (int)avatarPos.x && (int)currPos.y == (int)avatarPos.y || (int)prevPos.x == (int)avatarPos.x && (int)prevPos.y == (int)avatarPos.y)
+      {
+        lives--;
+        gameStart = false;
+        lifeLost = true;
+        resetAvatar();
+        resetGhosts();
+        return;
+      }
     }
+  }
+  
+  void resetAvatar() {
+    maze[(int)character.getPos().x][(int)character.getPos().y] = SPACE;
+    maze[1][maze[0].length / 2] = AVATAR;
+    character.setPos(1, maze[0].length / 2);
+  }
+  
+  void resetGhosts() {
+    for (int i = -1; i <= 1; i++)
+    {
+      maze[(int)ghosts.get(i + 1).getPos().x][(int)ghosts.get(i + 1).getPos().y] = SPACE;
+      ghosts.get(i + 1).setPos(maze.length / 2 + i, maze[0].length / 2);
+      maze[maze.length / 2 + i][maze[0].length / 2] = GHOST;
+    }
+  }
+  
+  int getLives() {
+    return lives;
   }
 }
   

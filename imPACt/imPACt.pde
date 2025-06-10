@@ -41,8 +41,11 @@ void draw() {
       character.drawAvatar(400, 600, 225);
       break;
     case "game":
-      myGame.drawMaze();
+      if (myGame.getLives() <= 0) {currentScreen = "result";}
+      else {myGame.drawMaze();}
       break;
+    case "result":
+      background(190);
   }
 }
 

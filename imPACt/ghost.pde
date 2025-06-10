@@ -1,16 +1,20 @@
 public class ghost {
-  int posX;
-  int posY;
+  PVector pos;
   PVector prevDir = new PVector(0, 0);
+  boolean isChaser;
   color ghostColor;
   
   public ghost(int x, int y) {
-    posX = x;
-    posY = y;
+    pos = new PVector(x, y);
     ghostColor = color(random(255), random(255), random(255));
   }
   
-  void drawGhost(int x, int y, int size) {
+  public ghost(int x, int y, boolean isChaser) {
+    this(x, y);
+    this.isChaser = isChaser;
+  }
+  
+  void drawGhost(float x, float y, int size) {
     rectMode(CENTER); 
     
     //body
@@ -43,23 +47,59 @@ public class ghost {
     ellipse(x + (size * 0.3), y + (size * 0.25), size * 0.2, size * 0.15);
   }
   
-  void move(int[][] maze) {
+  void move(int[][] maze, PVector avatarPos) {
     ArrayList<PVector> directions = new ArrayList<PVector>();
     PVector[] dirs = {new PVector(-1, 0), new PVector(1, 0), new PVector(0, -1), new PVector(0, 1)};
-    for (int i = dirs.length - 1; i >= 0; i--)
+    if (isChaser)
     {
-      int j = (int)(Math.random() * (i + 1));
-      PVector temp = dirs[i];
-      dirs[i] = dirs[j];
-      dirs[j] = temp;
+      for (int i = 0; i < dirs.length - 1; i++)
+      {
+        for (int j = i + 1; j < dirs.length; j++)
+        {
+          PVector nextI = PVector.add(pos, dirs[i]);
+          PVector nextJ = PVector.add(pos, dirs[j]);
+          float distI = PVector.dist(nextI, avatarPos);
+          float distJ = PVector.dist(nextJ, avatarPos);
+          
+          if (distJ < distI) 
+          {
+            PVector temp = dirs[i];
+            dirs[i] = dirs[j];
+            dirs[j] = temp;
+          }
+        }
+      }
+    }
+    else
+    {
+      for (int i = dirs.length - 1; i >= 0; i--)
+      {
+        int j = (int)(Math.random() * (i + 1));
+        PVector temp = dirs[i];
+        dirs[i] = dirs[j];
+        dirs[j] = temp;
+      }
     }
 
     for (PVector d : dirs) 
     {
-      int newX = posX + (int)d.x;
-      int newY = posY + (int)d.y;
+      PVector newPos = PVector.add(pos, d);
+      int newX = (int)newPos.x;
+      int newY = (int)newPos.y;
+
+      if ((int)pos.y == maze[0].length / 2) 
+      {
+        if (newX < 0) {newX = maze.length - 1;}
+        else {if (newX >= maze.length) {newX = 0;}}
+      }
+      if ((int)pos.x == maze.length / 2) 
+      {
+        if (newY < 0) {newY = maze[0].length - 1;}
+        else {if (newY >= maze[0].length) {newY = 0;}}
+      }
       
-      //WALL = 0, GHOST = 3
+      //WALL = 0
+      //GHOST = 3
       if (newX >= 0 && newX < maze.length && newY >= 0 && newY < maze[0].length && maze[newX][newY] != 0 && maze[newX][newY] != 3) 
       {
         if (!(d.x == -prevDir.x && d.y == -prevDir.y))
@@ -73,8 +113,20 @@ public class ghost {
     {
       for (PVector d : dirs) 
       {
-        int newX = posX + (int)d.x;
-        int newY = posY + (int)d.y;
+        PVector newPos = PVector.add(pos, d);
+        int newX = (int)newPos.x;
+        int newY = (int)newPos.y;
+        
+        if ((int)pos.y == maze[0].length / 2) 
+        {
+          if (newX < 0) {newX = maze.length - 1;}
+          else {if (newX >= maze.length) {newX = 0;}}
+        }
+        if ((int)pos.x == maze.length / 2) 
+        {
+          if (newY < 0) {newY = maze[0].length - 1;}
+          else {if (newY >= maze[0].length) {newY = 0;}}
+        }
         
         if (newX >= 0 && newX < maze.length && newY >= 0 && newY < maze[0].length && maze[newX][newY] != 0 && maze[newX][newY] != 3) 
         {
@@ -86,26 +138,33 @@ public class ghost {
     if (directions.size() > 0)
     {
       PVector choice = directions.get((int)random(directions.size()));
+      int newX = (int)(pos.x + choice.x);
+      int newY = (int)(pos.y + choice.y);
       
-      maze[posX][posY] = 1;
-      posX += (int)choice.x;
-      posY += (int)choice.y;
-      maze[posX][posY] = 3;
+      if ((int)pos.y == maze[0].length / 2) 
+      {
+        if (newX < 0) {newX = maze.length - 1;}
+        else {if (newX >= maze.length) {newX = 0;}}
+      }
+      if ((int)pos.x == maze.length / 2) 
+      {
+        if (newY < 0) {newY = maze[0].length - 1;}
+        else {if (newY >= maze[0].length) {newY = 0;}}
+      }
+        
+      maze[(int)pos.x][(int)pos.y] = 1;
+      pos = new PVector(newX, newY);
+      maze[(int)pos.x][(int)pos.y] = 3;
       
       prevDir = choice.copy();
     }
   }
   
-  int getPosX() {
-    return posX;
+  PVector getPos() {
+    return pos.copy();
   }
   
-  int getPosY() {
-    return posY;
-  }
-  
-  void setPos(int x, int y) {
-    posX = x;
-    posY = y;
+  void setPos(float x, float y) {
+    pos = new PVector(x, y);
   }
 }

@@ -1,18 +1,17 @@
 public class avatar {
-  int posX;
-  int posY;
-  PVector dir = new PVector(0, 0);
+  PVector pos;
+  PVector dir;
   color hairColor;
   color skinColor;
  
   public avatar(color hair, color skin) {
+    pos = new PVector(0, 0);
+    dir = new PVector(0, 0);
     hairColor = hair;
     skinColor = skin;
-    posX = 0;
-    posY = 0;
   }
   
-  void drawAvatar(int x, int y, int size) {
+  void drawAvatar(float x, float y, int size) {
     //back hair
     noStroke();
     fill(hairColor);
@@ -58,22 +57,20 @@ public class avatar {
 
   }
   
-  int getPosX() {
-    return posX;
+  PVector getPos() {
+    return pos.copy();
   }
   
-  int getPosY() {
-    return posY;
+  PVector getDir() {
+    return dir.copy();
+  }
+
+  void setPos(float x, float y) {
+    pos.set(x, y);
   }
   
-  void setPos(int x, int y) {
-    posX = x;
-    posY = y;
-  }
-  
-  void setDir(int x, int y) {
-    dir.x = x;
-    dir.y = y;
+  void setDir(float x, float y) {
+    dir.set(x, y);
   }
   
   void setHairColor(color hair) {
