@@ -1,30 +1,30 @@
 //Music: Relaxing Lofi - Tessera by Sascha Ende
 //Link: https://filmmusic.io/en/song/12257-relaxing-lofi-tessera
 import processing.sound.*;
-SoundFile backgroundMusic;
-SoundFile clickSFX;
+private SoundFile backgroundMusic;
+private SoundFile clickSFX;
 
-PFont font;
+private PFont font;
 
 //screens 
-String currentScreen = "start"; 
-start startScreen;
+private String currentScreen = "start"; 
+private start startScreen;
 
 //avatar for customization
-color[] hairColors = {#2E1802, #81552A, #FFD78B, #FA9A23, #FF81C6, #A881FF, #2A5EE8, #2AE8DA}; //black/dark brown, brown, blonde, ginger, pink, purple, dark blue, teal
-color[] skinColors = {#FFD8A7, #CBA575, #714C1E}; //light, tan, dark
-boolean hairSelectMode = false;
-boolean skinSelectMode = false;
-int currentHair = 0;
-int currentSkin = 0;
-avatar character;
+private color[] hairColors = {#2E1802, #81552A, #FFD78B, #FA9A23, #FF81C6, #A881FF, #2A5EE8, #2AE8DA}; //black/dark brown, brown, blonde, ginger, pink, purple, dark blue, teal
+private color[] skinColors = {#FFD8A7, #CBA575, #714C1E}; //light, tan, dark
+private boolean hairSelectMode = false;
+private boolean skinSelectMode = false;
+private int currentHair = 0;
+private int currentSkin = 0;
+private avatar character;
 
 //game
-game myGame;
-String gameDifficulty = "normal";
+private game myGame;
+private String gameDifficulty = "normal";
 
 //result
-result myResult;
+private result myResult;
 
 void setup() {
   size(800, 800);
@@ -41,11 +41,11 @@ void draw() {
   switch(currentScreen) {
     case "start":
       startScreen.drawStart();
-      fill(#ffc0cb);
+      fill(#9c7e7e);
       textAlign(CENTER, CENTER);
       textFont(font);
       text("difficulty: " + gameDifficulty, 400, 475);
-      character.drawAvatar(400, 600, 225);
+      character.drawAvatar(205, 620, 225);
       break;
     case "game":
       if (myGame.getLives() <= 0 || myGame.isWin()) {myGame.setTimerRunning(false); currentScreen = "result";}
@@ -61,8 +61,8 @@ void draw() {
       {
         myResult = new result(false, myGame);
         myResult.drawResult();
-        
       }
+      break;
   }
 }
 
@@ -77,12 +77,13 @@ void mousePressed() {
      case "result":
        if (myResult.overButton(400, 500, 550, 100))
        {
-       clickSFX.play(); 
-       currentScreen = "start";
-       character = new avatar(hairColors[currentHair], skinColors[currentSkin]);
-       myGame = new game(character, gameDifficulty);
-       myResult = null;
-     }
+         clickSFX.play(); 
+         currentScreen = "start";
+         character = new avatar(hairColors[currentHair], skinColors[currentSkin]);
+         myGame = new game(character, gameDifficulty);
+         myResult = null;
+       }
+       break;
   }
 }
 

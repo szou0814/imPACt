@@ -1,13 +1,15 @@
 public class start {
- PFont font;
- PImage background;
+ private PFont fontBig;
+ private PFont fontSmall;
+ private PImage background;
  
- color currentButtonColor;
- color buttonColor;
- color highlightColor;
+ private color currentButtonColor;
+ private color buttonColor;
+ private color highlightColor;
  
  public start() {
-   font = loadFont("TimesNewRomanPS-BoldMT-40.vlw");
+   fontBig = loadFont("TimesNewRomanPS-BoldMT-40.vlw");
+   fontSmall = loadFont("TimesNewRomanPS-BoldMT-25.vlw");
    background = loadImage("data/start.jpg");
    currentButtonColor = #ffc0cb;
    buttonColor = #ffc0cb;
@@ -16,8 +18,24 @@ public class start {
  
   void drawStart() {   
     image(background, 0, 0);
+    
+    rectMode(CENTER);
+    stroke(#e1f5fc);
+    strokeWeight(5);
+    fill(#fffcd3);
+    rect(525, 620, 350, 225, 28);
     drawStartButton();
-
+    
+    fill(#ffc0cb);
+    textAlign(CENTER, CENTER);
+    textFont(fontBig);
+    text("instructions", 525, 530);
+    fill(#9c7e7e);
+    textAlign(LEFT, LEFT);
+    textFont(fontSmall);
+    text("- press 'h' and arrow keys to\nswitch hair color", 362, 575);
+    text("- press 's' and arrow keys to\nswitch skin color", 362, 630);
+    text("- press '1', '2', and '3' to\nswitch difficulty", 362, 685);
   }
   
   void drawStartButton() {
@@ -40,7 +58,7 @@ public class start {
     //text
     fill(255);
     textAlign(CENTER, CENTER);
-    textFont(font);
+    textFont(fontBig);
     text("start game", 400, 400);
   }
 

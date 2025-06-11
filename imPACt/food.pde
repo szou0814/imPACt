@@ -1,8 +1,8 @@
 public class food {
- PVector pos;
- String type;
- int value;
- int powerupDuration;
+ private PVector pos;
+ private String type;
+ private int value;
+ private int powerupDuration;
  
  public food(int x, int y, String difficulty) {
    pos = new PVector(x, y);

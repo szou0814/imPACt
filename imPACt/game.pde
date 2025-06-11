@@ -1,54 +1,58 @@
 import java.util.ArrayList;
 
 public class game {
-  PFont fontBig;
-  PFont fontSmall;
+  private PFont fontBig;
+  private PFont fontSmall;
   
-  boolean gameStart = false;
-  boolean lifeLost = false;
-  String difficulty;
+  private boolean gameStart = false;
+  private boolean lifeLost = false;
+  private String difficulty;
   
-  int startTime = 0;
-  int totalElapsed = 0;
-  boolean timerRunning = false;
-  int ticks = 0;
-  int score = 0;
+  private int startTime = 0;
+  private int totalElapsed = 0;
+  private boolean timerRunning = false;
+  private int ticks = 0;
+  private int score = 0;
   
-  int[][] maze;
-  int size = 40;
-  final int WALL = 0;
-  final int SPACE = 1;
-  final int AVATAR = 2;
-  final int GHOST = 3;
-  final int FOOD = 4;
+  private int[][] maze;
+  private int size = 40;
+  private final int WALL = 0;
+  private final int SPACE = 1;
+  private final int AVATAR = 2;
+  private final int GHOST = 3;
+  private final int FOOD = 4;
   
-  ArrayList<ghost> ghosts = new ArrayList<ghost>();
-  ArrayList<food> foods = new ArrayList<food>();
-  int numGhosts;
-  int ghostBound;
-  avatar character;
+  private ArrayList<ghost> ghosts = new ArrayList<ghost>();
+  private ArrayList<food> foods = new ArrayList<food>();
+  private int numGhosts;
+  private int ghostBound;
+  private avatar character;
  
-  int lives;
-  int avatarTicks;
-  int ghostTicks;
-  int totalFood = 0;
-  PImage heartImg;
+  private int lives;
+  private int avatarTicks;
+  private int ghostTicks;
+  private int totalFood = 0;
+  private PImage heartImg;
   
-  boolean isImmune = false;
-  int immuneStart = 0;
-  int immuneDuration = 0;
-  int timeImmune = 0;
-  boolean isMultiplied = false;
-  int scoreMultiplier = 1;
-  int multiplyStart = 0;
-  int multiplyDuration = 0;
-  int timeMultiplied = 0;
+  private boolean isImmune = false;
+  private int immuneStart = 0;
+  private int immuneDuration = 0;
+  private int timeImmune = 0;
+  private boolean isMultiplied = false;
+  private int scoreMultiplier = 1;
+  private int multiplyStart = 0;
+  private int multiplyDuration = 0;
+  private int timeMultiplied = 0;
+  
+  private int level = 1; //3 levels max
+  private boolean levelTransition = false;
   
   public game(avatar character, String difficulty) {  
     this.character = character;
     this.difficulty = difficulty;
-    if (difficulty.equals("easy")) {numGhosts = 2; lives = 5; ghostTicks = 15; avatarTicks = 19;}
-    
+    if (difficulty.equals("easy")) {numGhosts = 2; lives = 5; ghostTicks = 15; avatarTicks = 10;}
+    if (difficulty.equals("normal")) {numGhosts = 3; lives = 3; ghostTicks = 11; avatarTicks = 10;}
+    if (difficulty.equals("hard")) {numGhosts = 4; lives = 2; ghostTicks = 7; avatarTicks = 10;}
     
     fontBig = loadFont("TimesNewRomanPS-BoldMT-40.vlw");
     fontSmall = loadFont("TimesNewRomanPS-BoldMT-25.vlw");
@@ -64,7 +68,16 @@ public class game {
     noStroke();
     fill(#fffcd3);
     square(0, 0, 1600);
-  
+    
+    if (foods.size() == 0 && lives > 0 && level <= 3 && !levelTransition)
+    {
+      level++;
+      levelTransition = true;
+      gameStart = false;
+      timerRunning = false;
+      nextLevel();
+    }
+      
     if (isImmune && ((millis() - immuneStart) > immuneDuration)) {isImmune = false;}
     if (isMultiplied && ((millis() - multiplyStart) > multiplyDuration)) {isMultiplied = false; scoreMultiplier = 1;}
     
@@ -104,13 +117,20 @@ public class game {
       fill(#fccde1);
       textAlign(CENTER, CENTER);
       textFont(fontBig);
-      text("" + difficulty + "press any key to start", 400, 318);
+      text("level " + level + ": press any key to start", 400, 318);
       
       fill(#e3bbbc);
       textFont(fontSmall);
       if (!lifeLost)
       {
-        text("your goal is to collect all the lines of code and\nachievements while avoiding the ghosts\n of negative thought. good luck!", 400, 382);
+        if (level == 1) 
+        {
+          text("your goal is to collect all the lines of code and\nachievements while avoiding the ghosts\n of negative thought. good luck!", 400, 382);
+        }
+        else
+        {
+          text("congrats! you advanced to the next level.\nyou are doing amazing!", 400, 375);
+        }
       }
       else
       {
@@ -144,10 +164,10 @@ public class game {
     text("score: " + score, 2, 780);
     if (isImmune) {timeImmune = (immuneDuration - (millis() - immuneStart)) / 1000;}
     else {timeImmune = 0;}
-    text("immunity time left: " + timeImmune + "s", 135, 755);
+    text("immunity time left: " + timeImmune + "s", 145, 755);
     if (isMultiplied) {timeMultiplied = (multiplyDuration - (millis() - multiplyStart)) / 1000;}
     else {timeMultiplied = 0;}
-    text("score multiplier time left: " + scoreMultiplier + "x " + timeMultiplied + "s", 135, 780);
+    text("score multiplier time left: " + scoreMultiplier + "x " + timeMultiplied + "s", 145, 780);
     
     rectMode(CORNER);
     noStroke();
@@ -178,6 +198,13 @@ public class game {
     for (int c = maze[0].length - 1; c > maze[0].length - 6; c--) {maze[maze.length / 2][c] = SPACE;}
     
     //ensure space for character
+    for (int r = 0; r < maze.length; r++)
+    {
+      for (int c = 0; c < maze[0].length; c++)
+      {
+        if (maze[r][c] == AVATAR) {maze[r][c] = SPACE;}
+      }
+    }
     maze[1][maze[0].length / 2] = AVATAR;
     maze[2][maze[0].length / 2] = SPACE;
     character.setPos(1, maze[0].length / 2);
@@ -193,11 +220,10 @@ public class game {
       if (i == 0) {ghosts.add(new ghost(maze.length / 2, maze[0].length / 2));}
       else {ghosts.add(new ghost(maze.length / 2 + i, maze[0].length / 2));}
     }
-    
-
-    
+   
     //add food
     foods.clear();
+    totalFood = 0;
     for (int r = 0; r < maze.length; r++)
     {
       for (int c = 0; c < maze[r].length; c++)
@@ -208,7 +234,7 @@ public class game {
     }
   }
   
-  void carveMaze(int[][] maze, int row, int col) {
+  private void carveMaze(int[][] maze, int row, int col) {
     if (row <= 0 || row >= maze.length - 1 || col <= 0 || col >= maze[row].length - 1) {return;}
     if (maze[row][col] == SPACE || checkAdjacent(maze, row, col)) {return;}
     
@@ -230,7 +256,7 @@ public class game {
     }
   }
   
-  boolean checkAdjacent(int[][] maze, int row, int col) {
+ private boolean checkAdjacent(int[][] maze, int row, int col) {
     int count = 0;
     int[][] directions = {{row + 1, col}, {row - 1, col}, {row, col - 1}, {row, col + 1}};
     for (int[] dir : directions)
@@ -244,6 +270,12 @@ public class game {
   }
   
   void handleKeyPress(int code) {
+    if (levelTransition)
+    {
+      levelTransition = false;
+      return;     
+    }
+    
     if (!gameStart) 
     {
       if (!timerRunning)
@@ -361,11 +393,14 @@ public class game {
   }
   
   void resetGhosts() {
+    int index = 0;
     for (int i = -(numGhosts / 2); i <= ghostBound; i++)
     {
-      maze[(int)ghosts.get(i + 1).getPos().x][(int)ghosts.get(i + 1).getPos().y] = SPACE;
-      ghosts.get(i + 1).setPos(maze.length / 2 + i, maze[0].length / 2);
+      maze[(int)ghosts.get(index).getPos().x][(int)ghosts.get(index).getPos().y] = SPACE;
+      ghosts.get(index).setPos(maze.length / 2 + i, maze[0].length / 2);
       maze[maze.length / 2 + i][maze[0].length / 2] = GHOST;
+      
+      index++;
     }
   }
   
@@ -391,8 +426,21 @@ public class game {
   }
   
   boolean isWin() {
-    if (lives > 0 && foods.size() == 0) {return true;}
+    if (level > 3) {return true;}
     else {return false;}
   }
+  
+  void nextLevel() {
+    if (level == 3) {numGhosts++;}
+    ghostTicks--;
+    foods.clear();
+    totalFood = 0;
+    carveMaze();
+    resetAvatar();
+    resetGhosts();
+    startTime = millis();
+    timerRunning = true;
+  }
+
 }
   

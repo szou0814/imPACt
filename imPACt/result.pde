@@ -1,15 +1,15 @@
 public class result {
-  PFont fontSuperBig;
-  PFont fontBig;
-  PImage heartImg;
-  PImage starImg;
+  private PFont fontSuperBig;
+  private PFont fontBig;
+  private PImage heartImg;
+  private PImage starImg;
   
-  color currentButtonColor;
-  color buttonColor;
-  color highlightColor;
+  private color currentButtonColor;
+  private color buttonColor;
+  private color highlightColor;
   
-  boolean isWin;
-  game myGame; 
+  private boolean isWin;
+  private game myGame; 
   
   public result(boolean win, game game) {
     fontSuperBig = loadFont("TimesNewRomanPS-BoldMT-140.vlw");

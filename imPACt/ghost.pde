@@ -1,13 +1,13 @@
 public class ghost {
-  PVector startPos;
-  PVector pos;
-  PVector prevDir = new PVector(0, 0);
-  int disabledEnd = 0;
-  boolean isChaser;
-  boolean isScared;
-  color scaredColor;
-  color ghostColor;
-  color currentColor;
+  private PVector startPos;
+  private PVector pos;
+  private PVector prevDir = new PVector(0, 0);
+  private int disabledEnd = 0;
+  private boolean isChaser;
+  private boolean isScared;
+  private color scaredColor;
+  private color ghostColor;
+  private color currentColor;
   
   public ghost(int x, int y) {
     startPos = new PVector(x, y);

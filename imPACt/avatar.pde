@@ -1,8 +1,8 @@
 public class avatar {
-  PVector pos;
-  PVector dir;
-  color hairColor;
-  color skinColor;
+  private PVector pos;
+  private PVector dir;
+  private color hairColor;
+  private color skinColor;
  
   public avatar(color hair, color skin) {
     pos = new PVector(0, 0);
