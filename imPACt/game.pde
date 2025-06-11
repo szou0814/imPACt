@@ -7,6 +7,9 @@ public class game {
   boolean gameStart = false;
   boolean lifeLost = false;
   
+  int startTime = 0;
+  int totalElapsed = 0;
+  boolean timerRunning = false;
   int ticks = 0;
   
   int[][] maze;
@@ -35,14 +38,16 @@ public class game {
   }
   
   void drawMaze() {
-    ticks++;
     rectMode(CENTER);
     
     noStroke();
     fill(#fffcd3);
     square(0, 0, 1600);
-   
-    if (gameStart && ticks % 13 == 0) {updateAvatar(); updateGhosts();}
+  
+    if (gameStart) {ticks++;}
+    if (gameStart && ticks % 10 == 0) {updateGhosts();}
+    if (gameStart && ticks % 12 == 0) {updateAvatar();}
+    if (!gameStart && timerRunning) {totalElapsed += (millis() - startTime) / 1000; timerRunning = false;}
     
     for (food f : foods) 
     {
@@ -72,22 +77,46 @@ public class game {
       rectMode(CENTER);
       rect(400, 360, 525, 140);
 
-      fill(255);
+      fill(#fccde1);
       textAlign(CENTER, CENTER);
       textFont(fontBig);
       text("press any key to start", 400, 318);
       
-     textFont(fontSmall);
+      fill(#e3bbbc);
+      textFont(fontSmall);
       if (!lifeLost)
       {
         text("your goal is to collect as many lines of code\nand achievements while avoiding the\nghosts of negative thought!", 400, 382);
       }
       else
       {
-        text("uh oh! you have " + lives + " lives left.\nyou got this. keep on going!", 400, 375);
+        if (lives == 1)
+        {
+          text("be careful now! you have just " + lives + " life left.\nyou can still do this!", 400, 375);
+        }
+        else
+        {
+          text("uh oh! you have " + lives + " lives left.\nyou got this. keep on going!", 400, 375);
+        }
       }
-      
     }
+    
+    drawStats();
+  }
+  
+  void drawStats() {
+    rectMode(CENTER);
+    
+    fill(#9c7e7e);
+    textAlign(LEFT);
+    textFont(fontSmall);
+    text("lives left: ", 2, 722);
+    for (int i = 0; i < lives; i++)
+    {
+      image(heartImg, 105 + i * 37, maze[0].length * size - 20, 30, 30);
+    }
+    
+    text("time: " + getTime(), 2, 745);
   }
   
   void carveMaze() {
@@ -162,7 +191,18 @@ public class game {
   }
   
   void handleKeyPress(int code) {
+    if (!gameStart) 
+    {
+      if (!timerRunning)
+      {
+        startTime = millis();
+        timerRunning = true;
+      }
+    }
+    
     gameStart = true;
+    lifeLost = false;
+    
     if (code == UP) {character.setDir(0, -1);}
     if (code == DOWN) {character.setDir(0, 1);}
     if (code == LEFT) {character.setDir(-1, 0);}
@@ -232,6 +272,15 @@ public class game {
   
   int getLives() {
     return lives;
+  }
+  
+  String getTime() {
+    int elapsed = totalElapsed;
+    if (timerRunning) {
+      elapsed += (millis() - startTime) / 1000;
+    }
+    
+    return nf(elapsed / 60, 2) + ":" + nf(elapsed % 60, 2);
   }
 }
   
