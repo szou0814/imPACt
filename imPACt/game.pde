@@ -11,6 +11,7 @@ public class game {
   int totalElapsed = 0;
   boolean timerRunning = false;
   int ticks = 0;
+  int score = 0;
   
   int[][] maze;
   int size = 40;
@@ -110,13 +111,14 @@ public class game {
     fill(#9c7e7e);
     textAlign(LEFT);
     textFont(fontSmall);
-    text("lives left: ", 2, 722);
+    text("lives left: ", 2, 730);
     for (int i = 0; i < lives; i++)
     {
-      image(heartImg, 105 + i * 37, maze[0].length * size - 20, 30, 30);
+      image(heartImg, 115 + i * 37, maze[0].length * size - 20, 30, 30);
     }
     
-    text("time: " + getTime(), 2, 745);
+    text("time: " + getTime(), 2, 755);
+    text("score: " + score, 2, 780);
   }
   
   void carveMaze() {
@@ -127,6 +129,11 @@ public class game {
     maze[maze.length - 1][maze[0].length / 2] = SPACE;
     maze[maze.length / 2][0] = SPACE;
     maze[maze.length / 2][maze[0].length - 1] = SPACE;
+    
+    for (int r = 0; r < 5; r++) {maze[r][maze[0].length / 2] = SPACE;}
+    for (int r = maze.length - 1; r > maze.length - 6; r--) {maze[r][maze[0].length / 2] = SPACE;}
+    for (int c = 0; c < 5; c++) {maze[maze.length / 2][c] = SPACE;}
+    for (int c = maze[0].length - 1; c > maze[0].length - 6; c--) {maze[maze.length / 2][c] = SPACE;}
     
     //ensure space for character
     maze[1][maze[0].length / 2] = AVATAR;
@@ -229,6 +236,16 @@ public class game {
     
     if (newX >= 0 && newX < maze.length && newY >= 0 && newY < maze[0].length && maze[newX][newY] != WALL) {
       maze[(int)pos.x][(int)pos.y] = SPACE;
+
+      for (int i = foods.size() - 1; i >= 0; i--) 
+      {
+        if ((int)foods.get(i).getPos().x == newX && (int)foods.get(i).getPos().y == newY) 
+        {
+          score += foods.get(i).getValue();
+          foods.remove(i);
+          break;
+        }
+      }
       maze[newX][newY] = AVATAR;
       character.setPos(newX, newY);
     }

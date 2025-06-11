@@ -9,7 +9,7 @@ PFont font;
 PImage start;
 
 //screens 
-String currentScreen = "start"; 
+String currentScreen = "game"; 
 start startScreen;
 
 //avatar for customization
