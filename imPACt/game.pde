@@ -6,6 +6,7 @@ public class game {
   
   boolean gameStart = false;
   boolean lifeLost = false;
+  String difficulty;
   
   int startTime = 0;
   int totalElapsed = 0;
@@ -23,20 +24,32 @@ public class game {
   
   ArrayList<ghost> ghosts = new ArrayList<ghost>();
   ArrayList<food> foods = new ArrayList<food>();
+  int numGhosts;
+  int ghostBound;
   avatar character;
  
-  int lives = 5;
+  int lives;
+  int avatarTicks;
+  int ghostTicks;
+  int totalFood = 0;
   PImage heartImg;
   
   boolean isImmune = false;
   int immuneStart = 0;
   int immuneDuration = 0;
   int timeImmune = 0;
-  
+  boolean isMultiplied = false;
   int scoreMultiplier = 1;
+  int multiplyStart = 0;
+  int multiplyDuration = 0;
+  int timeMultiplied = 0;
   
-  public game(avatar character) {  
+  public game(avatar character, String difficulty) {  
     this.character = character;
+    this.difficulty = difficulty;
+    if (difficulty.equals("easy")) {numGhosts = 2; lives = 5; ghostTicks = 15; avatarTicks = 19;}
+    
+    
     fontBig = loadFont("TimesNewRomanPS-BoldMT-40.vlw");
     fontSmall = loadFont("TimesNewRomanPS-BoldMT-25.vlw");
     heartImg = loadImage("heart.png");
@@ -52,11 +65,12 @@ public class game {
     fill(#fffcd3);
     square(0, 0, 1600);
   
-    if (isPoweredUp && ((millis() - powerStart) > powerDuration)) {isPoweredUp = false;}
+    if (isImmune && ((millis() - immuneStart) > immuneDuration)) {isImmune = false;}
+    if (isMultiplied && ((millis() - multiplyStart) > multiplyDuration)) {isMultiplied = false; scoreMultiplier = 1;}
     
     if (gameStart) {ticks++;}
-    if (gameStart && ticks % 10 == 0) {updateGhosts();}
-    if (gameStart && ticks % 12 == 0) {updateAvatar();}
+    if (gameStart && ticks % ghostTicks == 0) {updateGhosts();}
+    if (gameStart && ticks % avatarTicks == 0) {updateAvatar();}
     if (!gameStart && timerRunning) {totalElapsed += (millis() - startTime) / 1000; timerRunning = false;}
     
     for (food f : foods) 
@@ -90,7 +104,7 @@ public class game {
       fill(#fccde1);
       textAlign(CENTER, CENTER);
       textFont(fontBig);
-      text("press any key to start", 400, 318);
+      text("" + difficulty + "press any key to start", 400, 318);
       
       fill(#e3bbbc);
       textFont(fontSmall);
@@ -130,7 +144,23 @@ public class game {
     text("score: " + score, 2, 780);
     if (isImmune) {timeImmune = (immuneDuration - (millis() - immuneStart)) / 1000;}
     else {timeImmune = 0;}
-    text("immunity time left: " + timeImmune + "s", 150, 755);
+    text("immunity time left: " + timeImmune + "s", 135, 755);
+    if (isMultiplied) {timeMultiplied = (multiplyDuration - (millis() - multiplyStart)) / 1000;}
+    else {timeMultiplied = 0;}
+    text("score multiplier time left: " + scoreMultiplier + "x " + timeMultiplied + "s", 135, 780);
+    
+    rectMode(CORNER);
+    noStroke();
+    fill(255);
+    rect(510, 714, 260, 70);
+    fill(#e1f5fc);
+    rect(510, 714, ((float)(totalFood - foods.size()) / totalFood) * 260, 70);
+    stroke(#fccde1);
+    strokeWeight(5);
+    noFill();
+    rect(510, 714, 260, 70);
+    fill(#9c7e7e);
+    text("" + (int)(((float)(totalFood - foods.size()) / totalFood) * 100) + "%", 635, 755);
   }
   
   void carveMaze() {
@@ -154,13 +184,17 @@ public class game {
     
     //ensure space for ghosts
     ghosts.clear();
-    maze[maze.length / 2 - 1][maze[0].length / 2] = GHOST;
-    maze[maze.length / 2][maze[0].length / 2] = GHOST;
-    maze[maze.length / 2 + 1][maze[0].length / 2] = GHOST;
+    if (numGhosts % 2 != 0) {ghostBound = numGhosts/2;}
+    else {ghostBound = (numGhosts / 2) - 1;}
     
-    ghosts.add(new ghost(maze.length / 2 - 1, maze[0].length / 2, true));
-    ghosts.add(new ghost(maze.length / 2, maze[0].length / 2));
-    ghosts.add(new ghost(maze.length / 2 + 1, maze[0].length / 2));
+    for (int i = -(numGhosts / 2); i <= ghostBound; i++)
+    {
+      maze[maze.length / 2 + i][maze[0].length / 2] = GHOST;
+      if (i == 0) {ghosts.add(new ghost(maze.length / 2, maze[0].length / 2));}
+      else {ghosts.add(new ghost(maze.length / 2 + i, maze[0].length / 2));}
+    }
+    
+
     
     //add food
     foods.clear();
@@ -169,7 +203,7 @@ public class game {
       for (int c = 0; c < maze[r].length; c++)
       {
         boolean isTunnel = (r == 0 && c == maze[0].length / 2) || (r == maze.length - 1 && c == maze[0].length / 2) || (r == maze.length / 2 && c == 0) || (r == maze.length / 2 && c == maze[0].length - 1);   
-        if (!isTunnel && maze[r][c] == SPACE || maze[r][c] == GHOST) {foods.add(new food(r, c)); maze[r][c] = FOOD;}
+        if (!isTunnel && maze[r][c] == SPACE || maze[r][c] == GHOST) {foods.add(new food(r, c, difficulty)); maze[r][c] = FOOD; totalFood++;}
       }
     }
   }
@@ -181,7 +215,7 @@ public class game {
     if (row == 1 && col == maze.length / 2) {return;}
     
     maze[row][col] = SPACE;
-    foods.add(new food(row, col));
+    foods.add(new food(row, col, difficulty));
     ArrayList<Integer> directions = new ArrayList<Integer>();
     directions.add(0); directions.add(1); directions.add(2); directions.add(3);
     for (int i = 0; i < 4; i++)
@@ -253,12 +287,23 @@ public class game {
       {
         if ((int)foods.get(i).getPos().x == newX && (int)foods.get(i).getPos().y == newY) 
         {
-          score += foods.get(i).getValue();
+          score += scoreMultiplier * foods.get(i).getValue();
           if (foods.get(i).isPowerup())
           {
-            isImmune = true;
-            immuneStart = millis();
-            immuneDuration = foods.get(i).getPowerupDuration();
+            int whichPower = (int)(Math.random() * 100);
+            if (whichPower < 50) 
+            {
+              isImmune = true;
+              immuneStart = millis();
+              immuneDuration = foods.get(i).getPowerupDuration();
+            }
+            else 
+            {
+              isMultiplied = true;
+              multiplyStart = millis();
+              multiplyDuration = foods.get(i).getPowerupDuration();
+              if (scoreMultiplier < 4) {scoreMultiplier *= 2;}
+            }
           }
           foods.remove(i);
           break;
@@ -285,7 +330,9 @@ public class game {
       {
         if (isImmune && !g.isDisabled()) 
         {
-          score += 200;
+          score += scoreMultiplier * 200;
+          maze[(int)currPos.x][(int)currPos.y] = AVATAR;
+          character.setPos(currPos.x, currPos.y);
           g.powerupDisabled();
           g.setIsScared(false);
         }
@@ -294,6 +341,11 @@ public class game {
           lives--;
           gameStart = false;
           lifeLost = true;
+          isImmune = false;
+          isMultiplied = false;
+          timeImmune = 0;
+          timeMultiplied = 0;
+          scoreMultiplier = 1;
           resetAvatar();
           resetGhosts();
           return;
@@ -309,7 +361,7 @@ public class game {
   }
   
   void resetGhosts() {
-    for (int i = -1; i <= 1; i++)
+    for (int i = -(numGhosts / 2); i <= ghostBound; i++)
     {
       maze[(int)ghosts.get(i + 1).getPos().x][(int)ghosts.get(i + 1).getPos().y] = SPACE;
       ghosts.get(i + 1).setPos(maze.length / 2 + i, maze[0].length / 2);
@@ -328,6 +380,19 @@ public class game {
     }
     
     return nf(elapsed / 60, 2) + ":" + nf(elapsed % 60, 2);
+  }
+  
+  int getScore() {
+    return score;
+  }
+  
+  void setTimerRunning(boolean running) {
+    timerRunning = running;
+  }
+  
+  boolean isWin() {
+    if (lives > 0 && foods.size() == 0) {return true;}
+    else {return false;}
   }
 }
   

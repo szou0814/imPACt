@@ -177,7 +177,7 @@ public class ghost {
   }
  
   void powerupDisabled() {
-    disabledEnd = millis() + 10000;
+    disabledEnd = millis() + 5000;
     setPos(startPos.x, startPos.y);
   }
   

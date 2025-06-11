@@ -4,12 +4,15 @@ public class food {
  int value;
  int powerupDuration;
  
- public food(int x, int y) {
+ public food(int x, int y, String difficulty) {
    pos = new PVector(x, y);
-   
    int chancePowerup = (int)(Math.random() * 100);
-   if (chancePowerup < 90) {type = "normal"; powerupDuration = 0; value = 10;}
-   else {type = "powerUp"; powerupDuration = 20000; value = 50;}
+   int chanceBound = 0;
+   if (difficulty.equals("easy")) {chanceBound = 85;}
+   if (difficulty.equals("normal")) {chanceBound = 90;}
+   if (difficulty.equals("hard")) {chanceBound = 95;}
+   if (chancePowerup < chanceBound) {type = "normal"; powerupDuration = 0; value = 10;}
+   else {type = "powerUp"; powerupDuration = 10000; value = 50;}
  }
  
  void drawFood(float x, float y, float size) {

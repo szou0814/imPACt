@@ -4,12 +4,10 @@ import processing.sound.*;
 SoundFile backgroundMusic;
 SoundFile clickSFX;
 
-//text font
 PFont font;
-PImage start;
 
 //screens 
-String currentScreen = "game"; 
+String currentScreen = "start"; 
 start startScreen;
 
 //avatar for customization
@@ -23,29 +21,48 @@ avatar character;
 
 //game
 game myGame;
+String gameDifficulty = "normal";
+
+//result
+result myResult;
 
 void setup() {
   size(800, 800);
   //backgroundMusic = new SoundFile(this, "data/relaxing-lofi-tessera-by-sascha-ende-from-filmmusic-io.mp3");
   clickSFX = new SoundFile(this, "data/mouse-click-290204.mp3");
   //backgroundMusic.loop();
+  font = loadFont("TimesNewRomanPS-BoldMT-40.vlw");
   startScreen = new start();
   character = new avatar(hairColors[currentHair], skinColors[currentSkin]);
-  myGame = new game(character);
+  myGame = new game(character, gameDifficulty);
 }
 
 void draw() {
   switch(currentScreen) {
     case "start":
       startScreen.drawStart();
+      fill(#ffc0cb);
+      textAlign(CENTER, CENTER);
+      textFont(font);
+      text("difficulty: " + gameDifficulty, 400, 475);
       character.drawAvatar(400, 600, 225);
       break;
     case "game":
-      if (myGame.getLives() <= 0) {currentScreen = "result";}
+      if (myGame.getLives() <= 0 || myGame.isWin()) {myGame.setTimerRunning(false); currentScreen = "result";}
       else {myGame.drawMaze();}
       break;
     case "result":
-      background(190);
+      if (myGame.isWin())
+      {
+         myResult = new result(true, myGame);
+         myResult.drawResult();
+      }
+      else 
+      {
+        myResult = new result(false, myGame);
+        myResult.drawResult();
+        
+      }
   }
 }
 
@@ -57,6 +74,15 @@ void mousePressed() {
        break;
      case "game":
        break;
+     case "result":
+       if (myResult.overButton(400, 500, 550, 100))
+       {
+       clickSFX.play(); 
+       currentScreen = "start";
+       character = new avatar(hairColors[currentHair], skinColors[currentSkin]);
+       myGame = new game(character, gameDifficulty);
+       myResult = null;
+     }
   }
 }
 
@@ -64,6 +90,9 @@ void keyPressed() {
   switch(currentScreen) {
     case "start":
       //customize modes
+      if (key == '1') {gameDifficulty = "easy"; myGame = new game(character, gameDifficulty);} 
+      if (key == '2') {gameDifficulty = "normal"; myGame = new game(character, gameDifficulty);} 
+      if (key == '3') {gameDifficulty = "hard"; myGame = new game(character, gameDifficulty);}
       if (key == 'h') {hairSelectMode = true; skinSelectMode = false;}
       if (key == 's') {hairSelectMode = false; skinSelectMode = true;}
       //change hair
@@ -78,11 +107,11 @@ void keyPressed() {
       {
          if (keyCode == LEFT) {currentSkin = (currentSkin + skinColors.length - 1) % skinColors.length;}
          if (keyCode == RIGHT) {currentSkin = (currentSkin + 1) % skinColors.length;}
-         character.setSkinColor(skinColors[currentSkin]);
       }
       break;
     case "game":
       myGame.handleKeyPress(keyCode);
+      break;
   }
 }
 
