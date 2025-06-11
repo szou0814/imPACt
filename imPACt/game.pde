@@ -25,8 +25,15 @@ public class game {
   ArrayList<food> foods = new ArrayList<food>();
   avatar character;
  
-  int lives = 3;
+  int lives = 5;
   PImage heartImg;
+  
+  boolean isImmune = false;
+  int immuneStart = 0;
+  int immuneDuration = 0;
+  int timeImmune = 0;
+  
+  int scoreMultiplier = 1;
   
   public game(avatar character) {  
     this.character = character;
@@ -45,6 +52,8 @@ public class game {
     fill(#fffcd3);
     square(0, 0, 1600);
   
+    if (isPoweredUp && ((millis() - powerStart) > powerDuration)) {isPoweredUp = false;}
+    
     if (gameStart) {ticks++;}
     if (gameStart && ticks % 10 == 0) {updateGhosts();}
     if (gameStart && ticks % 12 == 0) {updateAvatar();}
@@ -87,7 +96,7 @@ public class game {
       textFont(fontSmall);
       if (!lifeLost)
       {
-        text("your goal is to collect as many lines of code\nand achievements while avoiding the\nghosts of negative thought!", 400, 382);
+        text("your goal is to collect all the lines of code and\nachievements while avoiding the ghosts\n of negative thought. good luck!", 400, 382);
       }
       else
       {
@@ -114,11 +123,14 @@ public class game {
     text("lives left: ", 2, 730);
     for (int i = 0; i < lives; i++)
     {
-      image(heartImg, 115 + i * 37, maze[0].length * size - 20, 30, 30);
+      image(heartImg, 105 + i * 37, maze[0].length * size - 15, 30, 30);
     }
     
     text("time: " + getTime(), 2, 755);
     text("score: " + score, 2, 780);
+    if (isImmune) {timeImmune = (immuneDuration - (millis() - immuneStart)) / 1000;}
+    else {timeImmune = 0;}
+    text("immunity time left: " + timeImmune + "s", 150, 755);
   }
   
   void carveMaze() {
@@ -242,6 +254,12 @@ public class game {
         if ((int)foods.get(i).getPos().x == newX && (int)foods.get(i).getPos().y == newY) 
         {
           score += foods.get(i).getValue();
+          if (foods.get(i).isPowerup())
+          {
+            isImmune = true;
+            immuneStart = millis();
+            immuneDuration = foods.get(i).getPowerupDuration();
+          }
           foods.remove(i);
           break;
         }
@@ -256,18 +274,30 @@ public class game {
     
     for (ghost g : ghosts)
     {
+      if (isImmune && !g.isDisabled()) {g.setIsScared(true);}
+      else {g.setIsScared(false);}
+      
       PVector prevPos = g.getPos().copy();
       g.move(maze, avatarPos);
       PVector currPos = g.getPos();
       
       if ((int)currPos.x == (int)avatarPos.x && (int)currPos.y == (int)avatarPos.y || (int)prevPos.x == (int)avatarPos.x && (int)prevPos.y == (int)avatarPos.y)
       {
-        lives--;
-        gameStart = false;
-        lifeLost = true;
-        resetAvatar();
-        resetGhosts();
-        return;
+        if (isImmune && !g.isDisabled()) 
+        {
+          score += 200;
+          g.powerupDisabled();
+          g.setIsScared(false);
+        }
+        else
+        {
+          lives--;
+          gameStart = false;
+          lifeLost = true;
+          resetAvatar();
+          resetGhosts();
+          return;
+        }
       }
     }
   }

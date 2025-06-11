@@ -7,10 +7,9 @@ public class food {
  public food(int x, int y) {
    pos = new PVector(x, y);
    
-   //deciding what type
    int chancePowerup = (int)(Math.random() * 100);
-   if (chancePowerup < 95) {type = "normal"; powerupDuration = 0; value = 10;}
-   else {type = "powerUp"; powerupDuration = 10; value = 50;}
+   if (chancePowerup < 90) {type = "normal"; powerupDuration = 0; value = 10;}
+   else {type = "powerUp"; powerupDuration = 20000; value = 50;}
  }
  
  void drawFood(float x, float y, float size) {
@@ -59,6 +58,14 @@ public class food {
   
   int getValue() {
     return value;
+  }
+  
+  int getPowerupDuration() {
+    return powerupDuration;
+  }
+  
+  boolean isPowerup() {
+    return type.equals("powerUp");
   }
   
   void setPos(float x, float y) {

@@ -1,12 +1,20 @@
 public class ghost {
+  PVector startPos;
   PVector pos;
   PVector prevDir = new PVector(0, 0);
+  int disabledEnd = 0;
   boolean isChaser;
+  boolean isScared;
+  color scaredColor;
   color ghostColor;
+  color currentColor;
   
   public ghost(int x, int y) {
+    startPos = new PVector(x, y);
     pos = new PVector(x, y);
+    scaredColor = color(166, 229, 251);
     ghostColor = color(random(255), random(255), random(255));
+    currentColor = ghostColor;
   }
   
   public ghost(int x, int y, boolean isChaser) {
@@ -17,9 +25,12 @@ public class ghost {
   void drawGhost(float x, float y, int size) {
     rectMode(CENTER); 
     
+    if (isScared) {currentColor = scaredColor;}
+    else {currentColor = ghostColor;}
+    
     //body
     noStroke();
-    fill(ghostColor);
+    fill(currentColor);
     square(x, y, size);
      
     //body cutouts 
@@ -42,12 +53,17 @@ public class ghost {
     square(x + (size * 0.14), y + (size * 0.04), size * 0.08);
      
     //blush
-    fill(#ffc0cb);
-    ellipse(x - (size * 0.3), y + (size * 0.25), size * 0.2, size * 0.15);
-    ellipse(x + (size * 0.3), y + (size * 0.25), size * 0.2, size * 0.15);
+    if (!isScared)
+    {
+      fill(#ffc0cb);
+      ellipse(x - (size * 0.3), y + (size * 0.25), size * 0.2, size * 0.15);
+      ellipse(x + (size * 0.3), y + (size * 0.25), size * 0.2, size * 0.15);
+    }
   }
   
   void move(int[][] maze, PVector avatarPos) {
+    if (isDisabled()) {return;}
+    
     ArrayList<PVector> directions = new ArrayList<PVector>();
     PVector[] dirs = {new PVector(-1, 0), new PVector(1, 0), new PVector(0, -1), new PVector(0, 1)};
     if (isChaser)
@@ -159,12 +175,25 @@ public class ghost {
       prevDir = choice.copy();
     }
   }
+ 
+  void powerupDisabled() {
+    disabledEnd = millis() + 10000;
+    setPos(startPos.x, startPos.y);
+  }
   
+  boolean isDisabled() {
+    return millis() < disabledEnd;
+  }
+ 
   PVector getPos() {
     return pos.copy();
   }
   
   void setPos(float x, float y) {
     pos = new PVector(x, y);
+  }
+  
+  void setIsScared(boolean scared) {
+    isScared = scared;
   }
 }
