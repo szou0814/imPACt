@@ -28,9 +28,9 @@ private result myResult;
 
 void setup() {
   size(800, 800);
-  //backgroundMusic = new SoundFile(this, "data/relaxing-lofi-tessera-by-sascha-ende-from-filmmusic-io.mp3");
+  backgroundMusic = new SoundFile(this, "data/relaxing-lofi-tessera-by-sascha-ende-from-filmmusic-io.mp3");
   clickSFX = new SoundFile(this, "data/mouse-click-290204.mp3");
-  //backgroundMusic.loop();
+  backgroundMusic.loop();
   font = loadFont("TimesNewRomanPS-BoldMT-40.vlw");
   startScreen = new start();
   character = new avatar(hairColors[currentHair], skinColors[currentSkin]);
@@ -108,6 +108,7 @@ void keyPressed() {
       {
          if (keyCode == LEFT) {currentSkin = (currentSkin + skinColors.length - 1) % skinColors.length;}
          if (keyCode == RIGHT) {currentSkin = (currentSkin + 1) % skinColors.length;}
+         character.setSkinColor(skinColors[currentSkin]);
       }
       break;
     case "game":

@@ -75,6 +75,11 @@ public class game {
       levelTransition = true;
       gameStart = false;
       timerRunning = false;
+      isImmune = false;
+      isMultiplied = false;
+      timeImmune = 0;
+      timeMultiplied = 0;
+      scoreMultiplier = 1;
       nextLevel();
     }
       
